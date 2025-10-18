@@ -151,9 +151,10 @@ export const codeagent = inngest.createFunction(
        if(isError){
         return await prisma.message.create({
           data:{
-          content:" Error: unable to process the request",
-          role:"ASSISTANT",
-          type:"ERROR",
+            projectId: event.data.projectId,
+            content:" Error: unable to process the request",
+            role:"ASSISTANT",
+            type:"ERROR",
           }
         })
        }
@@ -161,6 +162,7 @@ export const codeagent = inngest.createFunction(
 
       return await prisma.message.create({
          data:{
+          projectId: event.data.projectId,
           content:result.state.data.summary,
           role:"ASSISTANT",
           type:"RESULT",
