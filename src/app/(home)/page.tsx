@@ -1,17 +1,12 @@
 import React from 'react'
 import N1 from './n1';
 
-function page() {
-
+export default function Page() {
   return (
     <div>
-        <N1/>
+      <N1/>
     </div>
   )
 }
-
-
-
-export default page
 
 

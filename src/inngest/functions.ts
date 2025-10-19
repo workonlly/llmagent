@@ -6,6 +6,11 @@ import { z } from "zod";
 import { PROMPT } from "../prompt";
 import prisma from "../lib/prisma";
 
+interface AgentState{
+  summary:string;
+  files:{[path:string]:string};
+}
+
 export const codeagent = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },

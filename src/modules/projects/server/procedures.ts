@@ -4,6 +4,23 @@ import {z} from "zod"
 import { inngest } from '@/inngest/client' 
 import {generateSlug} from 'random-word-slugs'
 export const projectsRouter=createTRPCRouter({
+    getMany:baseProcedure
+    .query(async()=>{
+        const projects=await prisma.project.findMany({
+            orderBy:{
+                createdAt: 'desc',
+            },
+            include:{
+                messages: {
+                    take: 1,
+                    orderBy: {
+                        createdAt: 'desc',
+                    },
+                }
+            }
+        })
+        return projects;
+    }),
     getOne:baseProcedure
     .input(z.object({
         id:z.string().min(1,{message:"Project ID is required"})
