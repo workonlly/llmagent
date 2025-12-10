@@ -3,8 +3,10 @@
 import FragmentWeb from "../components/fragment-web";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { useAuth } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Suspense, useState } from "react";
+import { UserControl } from "@/components/user-control";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -25,6 +27,8 @@ interface Props {
 }
 
 export const ProjectView = ({ projectId }: Props) => {
+    const {has} =useAuth();
+    const hasProAccess=has?.({plan:"pro"});
     const [tabState, setTabState] = useState<'preview' | 'code'>('preview');
 
     const [activeFragment, setActiveFragment] = useState<PrismaFragment | null>(null);
@@ -68,11 +72,14 @@ export const ProjectView = ({ projectId }: Props) => {
                                 </TabsTrigger>
                             </TabsList>
                             <div className="ml-auto flex items-center gap-x-2">
+                                {!hasProAccess && (
                                 <Button asChild size="sm" variant="tertiary">
                                     <Link href="/pricing">
                                         <Crown className="size-4" /> Upgrade
                                     </Link>
                                 </Button>
+                                )}
+                                <UserControl></UserControl>
                             </div>
                         </div>
                         <TabsContent value="preview" className="flex-1 m-0">

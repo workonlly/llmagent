@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2Icon, ArrowUpIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PROJECT_TEMPLATES } from "../../constants";
+import { useClerk } from "@clerk/nextjs";
 
 
 const formSchema = z.object({
@@ -23,6 +24,7 @@ const formSchema = z.object({
 
 export const ProjectForm = () => {
     const router=useRouter();
+    const clerk = useClerk();
     const [isFocused, setIsFocused] = useState(false);
     const showUsage = false;
     const queryClient = useQueryClient();
@@ -30,13 +32,22 @@ export const ProjectForm = () => {
     
     const createProject = useMutation(trpc.projects.create.mutationOptions({
         onSuccess: (data) => {
-            queryClient.invalidateQueries({
-                queryKey: [['projects']]
-            });
+            queryClient.invalidateQueries(
+                trpc.projects.getMany.queryOptions(),
+            );
+            queryClient.invalidateQueries(
+                trpc.usage.status.queryOptions(),
+            )
             router.push(`/projects/${data.id}`);
         },
         onError: (error) => {
             toast.error(error.message);
+            if(error.data?.code==="UNAUTHORIZED"){
+            clerk.openSignIn();
+        }
+        if(error.data?.code==="TOO_MANY_REQUESTS"){
+                router.push('/pricing');
+        }
         }
     }))
 
@@ -120,7 +131,7 @@ export const ProjectForm = () => {
                     </div>
                 </form>
             </Form>
-            <div className="flex flex-wrap justify-center gap-2 hidden md:flex max-w-3xl mt-4">
+            <div className="flex-wrap justify-center gap-2 max-w-3xl mt-4 hidden md:flex">
                {PROJECT_TEMPLATES.map((template) => (
                 <Button 
                     key={template.title}

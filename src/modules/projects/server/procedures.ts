@@ -1,12 +1,16 @@
 import prisma  from '../../../lib/prisma'
-import { baseProcedure,createTRPCRouter } from '@/trpc/init'
+import { baseProcedure ,protectedProcedure,createTRPCRouter, TRPCError } from '@/trpc/init'
 import {z} from "zod"
 import { inngest } from '@/inngest/client' 
 import {generateSlug} from 'random-word-slugs'
+import { consumeCredits } from '@/lib/usage'
 export const projectsRouter=createTRPCRouter({
-    getMany:baseProcedure
-    .query(async()=>{
+    getMany:protectedProcedure
+    .query(async({ctx})=>{
         const projects=await prisma.project.findMany({
+            where:{
+                userId: ctx.auth.userId,
+            },
             orderBy:{
                 createdAt: 'desc',
             },
@@ -21,15 +25,16 @@ export const projectsRouter=createTRPCRouter({
         })
         return projects;
     }),
-    getOne:baseProcedure
+    getOne:protectedProcedure
     .input(z.object({
         id:z.string().min(1,{message:"Project ID is required"})
     }))
 
-    .query(async({input})=>{
+    .query(async({input,ctx})=>{
         const existingProject=await prisma.project.findUnique({
            where:{
             id:input.id,
+            userId: ctx.auth.userId,
            },
             include:{
                 messages: {
@@ -45,16 +50,33 @@ export const projectsRouter=createTRPCRouter({
         }
        return existingProject;
     }),
-    create:baseProcedure
+    create:protectedProcedure
     .input(
         z.object({
             value:z.string().min(1,{message:"Message is required"})
             .max(1000,{message:"Message is too long"}),
         }),
     )
-    .mutation(async({input})=>{
+    .mutation(async({input, ctx})=>{
+         try{
+              await consumeCredits();
+           }catch (error){
+               if (error instanceof Error) {
+                throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Something went wrong",
+                });
+            } else {
+                throw new TRPCError({
+                code: "TOO_MANY_REQUESTS",
+                message: "You have run out of credits",
+                });
+            }
+
+           }
         const createdProject=await prisma.project.create({
             data:{
+                userId:ctx.auth.userId,
                 name: generateSlug(2,{
                     format: "kebab",
                 }),

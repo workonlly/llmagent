@@ -12,6 +12,9 @@ import { Form, FormField } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon, ArrowUpIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { Usage } from "./usage";
 
 interface Props {
     projectId: string;
@@ -23,19 +26,28 @@ const formSchema = z.object({
 
 export const MessageForm = ({ projectId }: Props) => {
     const [isFocused, setIsFocused] = useState(false);
-    const showUsage = false;
+    const router=useRouter();
     const queryClient = useQueryClient();
     const trpc = useTRPC();
+    const { data: usage } = useQuery(trpc.usage.status.queryOptions());
+    const showUsage = !!usage;
     
     const createMessage = useMutation(trpc.messages.create.mutationOptions({
         onSuccess: () => {
             form.reset();
-            queryClient.invalidateQueries({
-                queryKey: [['projects', 'getOne'], { input: { id: projectId }, type: 'query' }]
-            })
+            queryClient.invalidateQueries(
+                trpc.projects.getOne.queryOptions({ id: projectId }),
+            );
+            queryClient.invalidateQueries(
+                trpc.usage.status.queryOptions(),
+            );
         },
         onError: (error) => {
             toast.error(error.message);
+            if(error.data?.code==="TOO_MANY_REQUESTS"){
+             router.push('/pricing');
+
+            }
         }
     }))
 
@@ -59,6 +71,12 @@ export const MessageForm = ({ projectId }: Props) => {
     return (
         <div>
             <Form {...form}>
+                {showUsage&&(
+                    <Usage
+                    points={usage.remainingPoints}
+                    msBeforeNext={usage.msBeforeNext}
+                    />
+                )}
                 <form onSubmit={form.handleSubmit(onSubmit)}
                     className={cn(
                         "relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",

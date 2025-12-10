@@ -1,4 +1,4 @@
-import { openai, createAgent, createTool, createNetwork } from "@inngest/agent-kit";
+import { openai, createAgent, createTool,createState, createNetwork ,type Tool ,type Message } from "@inngest/agent-kit";
 import { inngest } from "./client";
 import { Sandbox } from "@e2b/code-interpreter";
 import { getsandbox, lastAssistantTextMessageContext  } from "./utils";
@@ -19,6 +19,34 @@ export const codeagent = inngest.createFunction(
       const sandbox = await Sandbox.create("ll11mdone");
       return sandbox.sandboxId;
     });
+    const previousMessages = await step.run("get-previous-messages",async ()=>{
+      const formattedMessages:Message[]=[];
+      const messages=await prisma.message.findMany({
+        where:{
+          projectId: event.data.projectId,
+        },
+        orderBy:{
+          createdAt:"desc",
+        }
+      })
+
+      for(const message of messages){
+        formattedMessages.push({
+          type:"text",
+          role: message.role==="ASSISTANT" ? "assistant" : "user",
+          content: message.content,
+        })
+      }
+      return formattedMessages;
+    })
+    const state=createState<AgentState>({
+      summary:"",
+      files:{},
+
+    },
+  {
+    messages:previousMessages,
+  })
 
     const summarizer = createAgent({
       name: "summarizer",
@@ -131,6 +159,7 @@ export const codeagent = inngest.createFunction(
 
     const network = createNetwork({
       name: "coding-agent-network",
+      defaultState: state,
       agents: [summarizer],
       maxIter: 15,
       router: async ({ network }) => {
@@ -142,7 +171,7 @@ export const codeagent = inngest.createFunction(
       },
     });
 
-    const result= await network.run(event.data.value);
+    const result= await network.run(event.data.value ,{state});
     const isError=!result.state.data.summary ||
     Object.keys(result.state.data.files || {}).length ===0;
 
