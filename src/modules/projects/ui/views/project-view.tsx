@@ -17,8 +17,15 @@ import { Button } from "@/components/ui/button";
 
 import { MessagesContainer } from "../components/messages-container";
 import { ProjectHeader } from "../components/project-header";
-import { Fragment as PrismaFragment } from "@/generated/prisma";
 import { FileExplorer } from "@/components/file-explorer";
+
+type PrismaFragment = {
+    id: string;
+    messageId: string;
+    sandboxUrl: string;
+    title: string;
+    files: any;
+}
 
 interface Props {
     projectId: string;

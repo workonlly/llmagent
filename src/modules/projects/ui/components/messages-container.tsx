@@ -3,8 +3,30 @@ import { useTRPC } from "@/trpc/client";
 import { MessageCard } from "./message-card"
 import { MessageForm } from "./message-form";
 import { useRef, useEffect } from "react";
-import { Fragment as PrismaFragment } from "@/generated/prisma";
 import { MessageLoading } from "./message-loading";
+
+type PrismaFragment = {
+    id: string;
+    messageId: string;
+    sandboxUrl: string;
+    title: string;
+    files: any;
+}
+
+type Message = {
+    id: string;
+    content: string;
+    role: string;
+    type: string;
+    createdAt: Date;
+    fragment: PrismaFragment | null;
+}
+
+type Project = {
+    id: string;
+    name: string;
+    messages: Message[];
+}
 
 interface Props {
     projectId: string;
@@ -25,13 +47,13 @@ export const MessagesContainer = ({
             id: projectId,
         }),
         refetchInterval: 5000,
-    });
+    }) as { data: Project };
 
     const messages = project.messages;
 
     useEffect(() => {
         const lastAssistantMessage = messages.findLast(
-            (message) => message.role === "ASSISTANT"
+            (message: Message) => message.role === "ASSISTANT"
         );
 
         if (
@@ -54,7 +76,7 @@ export const MessagesContainer = ({
         <div className="flex flex-col flex-1 min-h-0">
             <div className="flex-1 min-h-0 overflow-y-auto">
                 <div className="pt-2 pr-1">
-                    {messages.map((message) => (
+                    {messages.map((message: Message) => (
                         <MessageCard
                             key={message.id}
                             content={message.content}

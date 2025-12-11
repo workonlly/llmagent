@@ -1,6 +1,12 @@
 'use client'
 
-import { Fragment as PrismaFragment } from "@/generated/prisma";
+type PrismaFragment = {
+    id: string;
+    messageId: string;
+    sandboxUrl: string;
+    title: string;
+    files: any;
+}
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCcwIcon, ExternalLinkIcon } from "lucide-react";
