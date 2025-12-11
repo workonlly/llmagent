@@ -1,8 +1,6 @@
 'use client'
 
 import FragmentWeb from "../components/fragment-web";
-import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Suspense, useState } from "react";
