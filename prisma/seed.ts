@@ -9,6 +9,7 @@ async function main() {
   const project = await prisma.project.create({
     data: {
       name: "sample-conversation",
+      userId: "seed_user_id", // Placeholder user ID for seeding
       messages: {
         create: [
           {
