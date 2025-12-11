@@ -19,14 +19,14 @@ export const ProjectsList = () => {
       <h2 className="text-2xl font-semibold">Saved codec</h2>
       {user?.firstName}&apos;s Vibes
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-  {projects?.length === 0 && (
+  {(projects as any[])?.length === 0 && (
     <div className="col-span-full text-center">
       <p className="text-sm text-muted-foreground">
         No projects found
       </p>
     </div>
   )}
-  {projects?.map((project) => (
+  {(projects as any[])?.map((project) => (
     <Button
       key={project.id}
       variant="outline"
