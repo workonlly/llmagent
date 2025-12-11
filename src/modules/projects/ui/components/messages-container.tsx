@@ -13,11 +13,14 @@ type PrismaFragment = {
     files: any;
 }
 
+type MessageRole = "USER" | "ASSISTANT";
+type MessageType = "RESULT" | "ERROR";
+
 type Message = {
     id: string;
     content: string;
-    role: string;
-    type: string;
+    role: MessageRole;
+    type: MessageType;
     createdAt: Date;
     fragment: PrismaFragment | null;
 }
