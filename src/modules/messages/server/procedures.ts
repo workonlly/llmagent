@@ -51,20 +51,24 @@ export const messageRouter=createTRPCRouter({
         })
 
         if(!existingProject){
-            throw new Error("Project not found");
+            throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Project not found",
+            });
         }
            try{
               await consumeCredits();
            }catch (error){
+               console.error("Error consuming credits:", error);
                if (error instanceof Error) {
                 throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: "Something went wrong",
+                code: "TOO_MANY_REQUESTS",
+                message: error.message || "You have run out of credits",
                 });
             } else {
                 throw new TRPCError({
-                code: "TOO_MANY_REQUESTS",
-                message: "You have run out of credits",
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Something went wrong",
                 });
             }
 
@@ -79,13 +83,19 @@ export const messageRouter=createTRPCRouter({
                 type:"RESULT",
             }
         });
-        await inngest.send({
-              name: "code-agent/run",
-              data: {
-                value: input.value,
-                projectId: input.projectId,
-              }
-            });
+        
+        try {
+          await inngest.send({
+                name: "code-agent/run",
+                data: {
+                  value: input.value,
+                  projectId: input.projectId,
+                }
+              });
+        } catch (error) {
+          console.error("Error sending to Inngest:", error);
+          // Don't throw - message was created successfully
+        }
 
             return createdMessage;
     })

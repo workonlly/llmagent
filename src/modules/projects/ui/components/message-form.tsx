@@ -89,13 +89,16 @@ export const MessageForm = ({ projectId }: Props) => {
                         name="value"
                         render={({ field }) => (
                             <TextareaAutosize
-                                {...field}
-                                disabled={isDisabled}
+                                value={field.value}
+                                onChange={field.onChange}
+                                onBlur={() => {
+                                    field.onBlur();
+                                    setIsFocused(false);
+                                }}
                                 onFocus={() => setIsFocused(true)}
-                                onBlur={() => setIsFocused(false)}
                                 minRows={2}
                                 maxRows={8}
-                                className="pt-4 resize-none border-none w-full outline-none bg-transparent"
+                                className="pt-4 resize-none border-none w-full outline-none bg-transparent text-foreground"
                                 placeholder="what would you like to build"
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {

@@ -61,15 +61,16 @@ export const projectsRouter=createTRPCRouter({
          try{
               await consumeCredits();
            }catch (error){
+               console.error("Error consuming credits:", error);
                if (error instanceof Error) {
                 throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: "Something went wrong",
+                code: "TOO_MANY_REQUESTS",
+                message: error.message || "You have run out of credits",
                 });
             } else {
                 throw new TRPCError({
-                code: "TOO_MANY_REQUESTS",
-                message: "You have run out of credits",
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Something went wrong",
                 });
             }
 
@@ -91,13 +92,18 @@ export const projectsRouter=createTRPCRouter({
             }
         })
 
-        await inngest.send({
-              name: "code-agent/run",
-              data: {
-                value: input.value,
-                projectId: createdProject.id,
-              }
-            });
+        try {
+          await inngest.send({
+                name: "code-agent/run",
+                data: {
+                  value: input.value,
+                  projectId: createdProject.id,
+                }
+              });
+        } catch (error) {
+          console.error("Error sending to Inngest:", error);
+          // Don't throw - project was created successfully
+        }
 
             return createdProject;
     })

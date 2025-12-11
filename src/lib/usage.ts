@@ -9,7 +9,7 @@ export async function getUsageTracker(){
 
         storeClient:prisma,
         tableName:"Usage",
-        points:hasProAcess ?100:5,
+        points:hasProAcess ?100:50,
         duration:30*24*60*60,
     })
    return usageTracker;
