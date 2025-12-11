@@ -1,9 +1,18 @@
 import { format } from "date-fns"
-import { MessageRole, Fragment, MessageType } from "@prisma/client";
 import { Card } from "@/components/ui/card";
 import { Code2Icon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+
+type MessageRole = "USER" | "ASSISTANT";
+type MessageType = "RESULT" | "ERROR";
+type Fragment = {
+    id: string;
+    messageId: string;
+    sandboxUrl: string;
+    title: string;
+    files: any;
+}
 
 interface UserMessageProps {
     content: string;
