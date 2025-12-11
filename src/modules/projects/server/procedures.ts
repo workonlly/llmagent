@@ -1,5 +1,5 @@
 import prisma  from '../../../lib/prisma'
-import { baseProcedure ,protectedProcedure,createTRPCRouter, TRPCError } from '@/trpc/init'
+import { protectedProcedure,createTRPCRouter, TRPCError } from '@/trpc/init'
 import {z} from "zod"
 import { inngest } from '@/inngest/client' 
 import {generateSlug} from 'random-word-slugs'

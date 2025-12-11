@@ -15,7 +15,7 @@ export function Navbar() {
         )}>
       <div className="max-w-5xl mx-auto w-full flex justify-between items-center">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Vibe" width={24} height={24} />
+          <Image src="/logo.png" alt="Vibe" width={24} height={24} />
           <span className="font-semibold text-lg">Codec</span>
         </Link>
         <SignedOut>

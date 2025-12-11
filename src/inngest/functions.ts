@@ -1,4 +1,4 @@
-import { openai, createAgent, createTool,createState, createNetwork ,type Tool ,type Message } from "@inngest/agent-kit";
+import { openai, createAgent, createTool,createState, createNetwork ,type Message } from "@inngest/agent-kit";
 import { inngest } from "./client";
 import { Sandbox } from "@e2b/code-interpreter";
 import { getsandbox, lastAssistantTextMessageContext  } from "./utils";

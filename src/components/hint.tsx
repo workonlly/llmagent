@@ -6,7 +6,6 @@ import{
  TooltipProvider,
  TooltipTrigger,
 }from "@/components/tooltip";
-import { Children } from "react";
 
 interface HintProps{
 
