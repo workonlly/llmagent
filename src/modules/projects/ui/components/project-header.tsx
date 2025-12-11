@@ -29,10 +29,15 @@ interface Props {
     projectId: string;
 }
 
+type Project = {
+    id: string;
+    name: string;
+}
+
 export const ProjectHeader = ({ projectId }: Props) => {
     const trpc = useTRPC();
     const { data: project } = useSuspenseQuery(
-        trpc.projects.getOne.queryOptions({ id: projectId }));
+        trpc.projects.getOne.queryOptions({ id: projectId })) as { data: Project };
 
     const { setTheme, theme } = useTheme();
     
