@@ -7,5 +7,5 @@ export const useCurrentTheme = () => {
     return theme;
   }
 
-  return systemTheme;
+  return systemTheme || "light";
 };

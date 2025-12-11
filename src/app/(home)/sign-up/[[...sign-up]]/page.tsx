@@ -3,6 +3,8 @@ import { SignUp } from "@clerk/nextjs";
 import {dark} from "@clerk/themes";
 import { useCurrentTheme } from "@/hooks/use-current-theme";
 
+export const dynamic = 'force-dynamic';
+
 const Page = () => {
     const currentTheme=useCurrentTheme();
     return(
@@ -25,4 +27,4 @@ const Page = () => {
     )
 }
 
-export default page;
+export default Page;

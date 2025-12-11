@@ -4,6 +4,8 @@ import  {PricingTable} from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { useCurrentTheme } from "@/hooks/use-current-theme";
 
+export const dynamic = 'force-dynamic';
+
 export default function PricingPage() {
     const currentTheme=useCurrentTheme();
     return(
@@ -11,14 +13,12 @@ export default function PricingPage() {
     <section className="space-y-6 pt-[16vh] 2xl:pt-48">
      <div className="flex flex-col items-center">
         <Image 
-        src="./logo.png"
+        src="/logo.png"
         alt="Vibe"
         height={40}
         width={40}
         className="hidden md:block"
-        >
-
-        </Image>
+        />
         </div>
      <h1 className="text-xl md:text-3xl font-bold text-center"> Pricing</h1>
      <p className="text-muted-foreground text-center text-sm md:text-base">
